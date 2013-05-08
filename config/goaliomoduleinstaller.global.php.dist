@@ -1,0 +1,11 @@
+<?php
+return array(
+
+    'goalio_module_installer' => array(
+        'config' => array(
+            'config_dir' => APPLICATION_DIR . '/config/autoload',
+        ),
+    ),
+
+
+);
