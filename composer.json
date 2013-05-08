@@ -1,0 +1,28 @@
+{
+    "name": "goalio/goalio-module-installer",
+    "description": "ZF2 Module that provides Events for application and module installation.",
+    "type": "library",
+    "keywords": [
+        "zf2"
+    ],
+    "homepage": "https://github.com/goalio/GoalioModuleInstaller",
+    "authors": [
+        {
+            "name": "Philipp Dobrigkeit",
+            "email": "p.dobrigkeit@goalio.de",
+            "homepage": "http://www.goalio.de"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.3",
+        "zendframework/zendframework": "2.*"
+    },
+    "autoload": {
+        "psr-0": {
+            "GoalioModuleInstaller": "src/"
+        },
+        "classmap": [
+            "./Module.php"
+        ]
+    }
+}
