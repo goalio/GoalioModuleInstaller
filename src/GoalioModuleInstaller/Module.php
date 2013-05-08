@@ -68,19 +68,14 @@ class Module implements ConsoleBannerProviderInterface, ConsoleUsageProviderInte
         );
     }
 
-
-    public function getConsoleBanner(AdapterInterface $console){
-        return
-        "==---------------------------------------------------==\n" .
-        "               goalio Module Installer                 \n" .
-        "==---------------------------------------------------==\n" .
-        "Version 0.0.1\n"
-        ;
+    public function getConsoleBanner(AdapterInterface $console) {
+        return 'GoalioModuleInstaller 0.0.1';
     }
 
     public function getConsoleUsage(AdapterInterface $console){
         return array(
-            'installer <command> [<module>] [--silent|-s]' => 'Execute a command, optionally only on a specific module. The silent option confirms all choices with "yes"',
+            'installer <command> [<module>] [--silent|-s]' => 'Execute a command, optionally only on a specific module. The silent option confirms all optional commands with "yes"',
+            'installer (--help|-?)'                        => 'Show available commands',
         );
     }
 

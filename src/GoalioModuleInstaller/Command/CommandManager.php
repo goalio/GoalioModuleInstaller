@@ -2,10 +2,11 @@
 namespace GoalioModuleInstaller\Command;
 
 use Zend\ServiceManager\AbstractPluginManager;
+use Zend\ServiceManager\Exception;
 
 class CommandManager extends AbstractPluginManager {
 
-    protected $invokables = array(
+    protected $invokableClasses = array(
         'closure'    => 'GoalioModuleInstaller\Command\Closure',
         'controller' => 'GoalioModuleInstaller\Command\Controller',
         'service'    => 'GoalioModuleInstaller\Command\Service',

@@ -1,6 +1,7 @@
 <?php
 namespace GoalioModuleInstaller\Controller;
 
+use Zend\Console\Prompt\Confirm;
 use Zend\Console\Prompt\Line;
 use Zend\Json\Json;
 use Zend\Mvc\Controller\AbstractActionController;
@@ -65,25 +66,46 @@ class InstallerController extends AbstractActionController {
         $commandParam = $this->params('command');
         $moduleParam  = $this->params('module');
 
+        $silent = $this->params('silent') || $this->params('s');
+
         $commandManager = $this->getCommandManager();
 
         $commands = $this->getCommands();
 
         // Restrict commands only to module namespace
         if($moduleParam !== null) {
-            $commands = (isset($commands[$moduleParam])) ? $commands[$moduleParam] : array();
+            $commands = (isset($commands[$moduleParam])) ? array($commands[$moduleParam]) : array();
         }
 
-        //$params = $this->gatherValuesForParams();
+        $console = $this->getServiceLocator()->get('console');
+        $console->writeLine('--=-- Checking Parameters --=--');
+
+        $params = $this->gatherValuesForParams();
+
+        $console->writeLine();
+        $console->writeLine('--=-- Executing Commands --=--');
+
+        $count = 0;
 
         foreach($commands as $moduleCommands) {
             if(isset($moduleCommands[$commandParam])) {
-                foreach($moduleCommands[$commandParam] as $commandOptions) {
-                    $command = $commandManager->get($commandOptions['type'], $commandOptions['options']);
-                    $command->execute($params);
+                foreach($moduleCommands[$commandParam] as $commandName => $commandOptions) {
+
+                    $optional = (isset($commandOptions['optional'])) ? $commandOptions['optional'] : false;
+                    $description = (isset($commandOptions['description'])) ? $commandOptions['description'] : $commandName;
+
+                    // Either silent (auto confirm), not optional, or optional and confirmed
+                    if($silent || !$optional || ($optional && Confirm::prompt($description . ' [y/n]: ', 'y', 'n'))) {
+                        $command = $commandManager->get($commandOptions['type'], $commandOptions['options']);
+                        $command->execute($params);
+                        $count++;
+                    }
                 }
             }
         }
+
+        $console->writeLine();
+        return sprintf("Executed %s command(s)", $count);
     }
 
 
@@ -106,7 +128,7 @@ class InstallerController extends AbstractActionController {
 
         // Restrict commands only to module namespace
         if($moduleParam !== null) {
-            $paramsConfig = (isset($paramsConfig[$moduleParam])) ? $paramsConfig[$moduleParam] : array();
+            $paramsConfig = (isset($paramsConfig[$moduleParam])) ? array($paramsConfig[$moduleParam]) : array();
         }
 
         $params = array();
