@@ -6,6 +6,9 @@ use Zend\ServiceManager\Exception;
 
 class CommandManager extends AbstractPluginManager {
 
+    protected $shareByDefault = false;
+
+
     protected $invokableClasses = array(
         'closure'    => 'GoalioModuleInstaller\Command\Closure',
         'controller' => 'GoalioModuleInstaller\Command\Controller',

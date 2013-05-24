@@ -87,7 +87,7 @@ class InstallerController extends AbstractActionController {
 
         $count = 0;
 
-        foreach($commands as $moduleCommands) {
+        foreach($commands as $moduleName => $moduleCommands) {
             if(isset($moduleCommands[$commandParam])) {
                 foreach($moduleCommands[$commandParam] as $commandName => $commandOptions) {
 
@@ -95,7 +95,10 @@ class InstallerController extends AbstractActionController {
                     $description = (isset($commandOptions['description'])) ? $commandOptions['description'] : $commandName;
 
                     // Either silent (auto confirm), not optional, or optional and confirmed
-                    if($silent || !$optional || ($optional && Confirm::prompt($description . ' [y/n]: ', 'y', 'n'))) {
+                    if($silent || !$optional || ($optional && Confirm::prompt($moduleName . ' - ' . $description . ' [y/n]: ', 'y', 'n'))) {
+                        if(!$optional) {
+                            $console->writeLine($moduleName . ' - ' . $description . ' [non-optional]');
+                        }
                         $command = $commandManager->get($commandOptions['type'], $commandOptions['options']);
                         $command->execute($params);
                         $count++;
@@ -122,7 +125,7 @@ class InstallerController extends AbstractActionController {
         $commandParam = $this->params('command');
         $moduleParam  = $this->params('module');
 
-        $routeParams  = Json::decode($this->params('params'));
+        $routeParams  = $this->decodeParams($this->params('params'));
 
         $paramsConfig = $this->getParams();
 
@@ -161,5 +164,10 @@ class InstallerController extends AbstractActionController {
         );
 
         return $value;
+    }
+
+    protected function decodeParams($params) {
+        $params = str_replace("'", '"', $params);
+        return Json::decode($params, Json::TYPE_ARRAY);
     }
 }
