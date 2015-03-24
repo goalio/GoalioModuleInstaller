@@ -52,7 +52,7 @@ class Service implements CommandInterface, ServiceLocatorAwareInterface {
         $service = $serviceLocator->get($this->service);
 
         if(method_exists($service, $this->method)) {
-            call_user_func(array($service, $this->method), $params);
+            call_user_func(array($service, $this->method), $params, $serviceLocator);
         }
     }
 
