@@ -145,23 +145,51 @@ class InstallerController extends AbstractActionController {
         $values = array();
 
         foreach($params as $param => $description) {
-            $values[$param] = $this->getValueForParam($param, $description, $routeParams);
+            $values[$param] = $this->getValueForParam($param, $description, $routeParams, $values);
         }
 
         return $values;
     }
 
-    protected function getValueForParam($name, $description, $routeParams) {
+    protected function getValueForParam($name, $description, $routeParams, $values = array()) {
 
         if(isset($routeParams[$name])) {
             return $routeParams[$name];
         }
 
-        $prompt     = sprintf("%s: ", $description);
+        /** @var \Mustache_Engine $mustache */
+        $mustache = $this->getServiceLocator()->get('Mustache');
 
-        $value = Line::prompt(
-            $prompt
-        );
+        if(is_array($description)) {
+
+            $defaultValue = null;
+            $allowEmpty = false;
+
+            if(isset($description['default'])) {
+                $defaultValue = $mustache->render($description['default'], $values);
+                $allowEmpty = true;
+            }
+
+            if(isset($description['hidden'])) {
+                return $defaultValue;
+            }
+
+            $prompt     = sprintf("%s%s: ", $description['label'], ($defaultValue) ? sprintf(" (%s)", $defaultValue) : '');
+            $value = Line::prompt(
+                $prompt,
+                $allowEmpty
+            );
+
+            if(empty($value)) {
+                $value = $defaultValue;
+            }
+
+        } else {
+            $prompt     = sprintf("%s: ", $description);
+            $value = Line::prompt(
+                $prompt
+            );
+        }
 
         return $value;
     }
